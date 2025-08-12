@@ -51,8 +51,9 @@ local CheckPlayersInRange = function()
                     local popupData = activePopups[playerServerId]
                     
                     if GetGameTimer() - popupData.startTime < 5000 and not popupVisibilityState[playerServerId] then
-                        local pedHeight = GetEntityHeight(playerPed, playerCoords.x, playerCoords.y, playerCoords.z, true, false)
-                        local popupPos = vector3(playerCoords.x, playerCoords.y, playerCoords.z + pedHeight + 0.2)
+                        -- Get head bone position for consistent positioning relative to head
+                        local headBone = GetPedBoneCoords(playerPed, 0x796e, 0.0, 0.0, 0.0)
+                        local popupPos = vector3(headBone.x, headBone.y, headBone.z + 0.3)
                         local onScreen, screenX, screenY = GetScreenCoordFromWorldCoord(popupPos.x, popupPos.y, popupPos.z)
                         
                         if onScreen and nuiReady then
@@ -99,7 +100,6 @@ local UpdatePopupPositions = function()
     local currentTime = GetGameTimer()
     
     for source, popupData in pairs(activePopups) do
-        -- Check if popup has expired (5 seconds)
         if currentTime - popupData.startTime > 5000 then
             activePopups[source] = nil
             popupVisibilityState[source] = nil
@@ -119,8 +119,8 @@ local UpdatePopupPositions = function()
                     local isCurrentlyVisible = popupVisibilityState[source] or false
                     
                     if distance < 25.0 then
-                        local pedHeight = GetEntityHeight(playerPed, sourceCoords.x, sourceCoords.y, sourceCoords.z, true, false)
-                        local popupPos = vector3(sourceCoords.x, sourceCoords.y, sourceCoords.z + pedHeight + 0.2)
+                        local headBone = GetPedBoneCoords(playerPed, 0x796e, 0.0, 0.0, 0.0)
+                        local popupPos = vector3(headBone.x, headBone.y, headBone.z + 0.3)
                         local onScreen, screenX, screenY = GetScreenCoordFromWorldCoord(popupPos.x, popupPos.y, popupPos.z)
                         
                         if onScreen and isCurrentlyVisible and nuiReady then
@@ -202,8 +202,8 @@ local ShowActionPopup = function(actionType, text, source)
             local distance = #(sourceCoords - nearCoords)
             
             if distance < 25.0 then
-                local pedHeight = GetEntityHeight(playerPed, sourceCoords.x, sourceCoords.y, sourceCoords.z, true, false)
-                local popupPos = vector3(sourceCoords.x, sourceCoords.y, sourceCoords.z + pedHeight + 0.2)
+                local headBone = GetPedBoneCoords(playerPed, 0x796e, 0.0, 0.0, 0.0)
+                local popupPos = vector3(headBone.x, headBone.y, headBone.z + 0.3)
                 local onScreen, screenX, screenY = GetScreenCoordFromWorldCoord(popupPos.x, popupPos.y, popupPos.z)
                 
                 if onScreen then
@@ -288,3 +288,4 @@ AddEventHandler('onResourceStop', function(resourceName)
         nuiReady = false
     end
 end)
+
